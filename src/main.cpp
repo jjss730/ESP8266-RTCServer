@@ -1,3 +1,8 @@
+// ======== Rev1 ========
+// * Publish 'time stamp' and 'number of seconds in the day' to MQTT broker
+
+
+
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
@@ -38,6 +43,7 @@ long LastTime;
 // int Rx_Pin = GPIO3;
 
 int relay8Pin = D8;
+int heartbeat = D4;
 long Delta_T = 0;
  
 
@@ -104,8 +110,10 @@ void connectMQTT() {
 void setup() {
  
   pinMode(relay8Pin, OUTPUT);
+  pinMode(heartbeat,OUTPUT);
 
   digitalWrite(relay8Pin, HIGH);
+  digitalWrite(heartbeat, LOW);
  
   // Connect to WiFi network
   Serial.begin(9600);
@@ -179,10 +187,12 @@ void loop() {
     client.publish("timehour", t);
     client.publish("timeref", t2);
     LastTime = ThisTime;
+    digitalWrite(heartbeat, LOW);
 
   } else{
     Serial.println(String(Delta_T));
+    digitalWrite(heartbeat, HIGH);
   }
   delay(500);
-  
+  digitalWrite(heartbeat, LOW);
 }
